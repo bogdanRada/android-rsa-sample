@@ -1,7 +1,9 @@
 package brainattica.com.rsasample.crypto;
 
 
+import android.os.Build;
 import android.util.Base64;
+import android.util.Log;
 
 //import org.spongycastle.jce.provider.BouncyCastleProvider;
 
@@ -11,10 +13,15 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.Provider;
+import java.security.Security;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PSSParameterSpec;
+import java.util.Set;
+
+import javax.crypto.Cipher;
 
 import brainattica.com.rsasample.utils.Preferences;
 
@@ -25,18 +32,25 @@ import brainattica.com.rsasample.utils.Preferences;
  */
 public class SignatureUtils {
 
-    private static Signature getInstance() {
+
+    private static Signature getSignature() throws RuntimeException {
         try {
-            Signature s = Signature.getInstance("SHA256withRSA", "AndroidKeyStore");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return  Signature.getInstance("SHA256withRSA");
+            } else{
+                return   Signature.getInstance("SHA256withRSA", "AndroidOpenSSL");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Signature getInstance() {
+            Signature s = getSignature();
           //  Signature s = Signature.getInstance("SHA256withRSA/PSS", new BouncyCastleProvider());
 //            PSSParameterSpec spec1 = new PSSParameterSpec("SHA-256", "MGF1", new MGF1ParameterSpec("SHA-256"), 0, 1);
 //            s.setParameter(spec1);
             return s;
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchProviderException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static String genSignature(String text) {
