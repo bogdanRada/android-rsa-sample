@@ -2,13 +2,11 @@ package brainattica.com.rsasample.crypto;
 
 import android.content.Context;
 import android.os.Build;
-import android.security.keystore.KeyProperties;
 import android.util.Base64;
 import android.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
-import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -17,11 +15,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.Security;
-import java.security.Signature;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
-import java.security.spec.RSAKeyGenParameterSpec;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.UUID;
@@ -30,8 +25,6 @@ import javax.crypto.Cipher;
 import javax.security.auth.x500.X500Principal;
 
 import brainattica.com.rsasample.utils.Preferences;
-
-import static java.security.spec.RSAKeyGenParameterSpec.F4;
 
 
 /**

@@ -3,27 +3,13 @@ package brainattica.com.rsasample.crypto;
 
 import android.os.Build;
 import android.util.Base64;
-import android.util.Log;
 
-//import org.spongycastle.jce.provider.BouncyCastleProvider;
-
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.Provider;
-import java.security.Security;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.security.spec.MGF1ParameterSpec;
-import java.security.spec.PSSParameterSpec;
-import java.util.Set;
 
-import javax.crypto.Cipher;
 
-import brainattica.com.rsasample.utils.Preferences;
 
 
 /**
