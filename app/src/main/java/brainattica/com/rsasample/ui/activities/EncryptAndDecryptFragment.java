@@ -3,6 +3,7 @@ package brainattica.com.rsasample.ui.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,9 +51,11 @@ public class EncryptAndDecryptFragment extends Fragment implements PagerSlide {
                 }
                 String message = textToBeEncrypted.getText().toString();
                 String encryptedMessage = RSA.encryptWithStoredKey(message);
-                String decryptedMessage = RSA.decryptWithStoredKey(encryptedMessage);
                 encryptedText.setText("Encrypted Text: " + encryptedMessage);
-                decryptedText.setText("Decrypted Text: " + decryptedMessage);
+
+                    String decryptedMessage = RSA.decryptWithStoredKey(encryptedMessage);
+                    decryptedText.setText("Decrypted Text: " + decryptedMessage);
+
 
                 Preferences.putString(Preferences.ENCRYPTED_MESSAGE, encryptedMessage);
             }

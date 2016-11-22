@@ -1,6 +1,7 @@
 package brainattica.com.rsasample.crypto;
 
 import android.content.Context;
+import android.os.Build;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
 import android.util.Log;
@@ -52,12 +53,26 @@ public class RSA {
     private static final int KEY_SIZE = 1024;
 
 
-    private static void loadKeyStore() throws RuntimeException{
+    public static KeyStore loadKeyStore() throws RuntimeException{
         try{
             RSA.keyStore = KeyStore.getInstance("AndroidKeyStore");
             RSA.keyStore.load(null);
+            return RSA.keyStore;
         }catch(Exception e){
 
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private static Cipher getCipher() throws RuntimeException {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return  Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            } else{
+                return  Cipher.getInstance("RSA/ECB/PKCS1Padding", "AndroidOpenSSL");
+            }
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -129,10 +144,10 @@ public class RSA {
         }
     }
 
-    public static byte[] encrypt(Key publicKey, byte[] toBeCiphred) {
+    public static byte[] encrypt(PublicKey publicKey, byte[] toBeCiphred) {
         try {
         //    Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
-            Cipher rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "AndroidOpenSSL");
+            Cipher rsaCipher = RSA.getCipher();
             rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return rsaCipher.doFinal(toBeCiphred);
         } catch (Exception e) {
@@ -141,15 +156,20 @@ public class RSA {
         }
     }
 
-    public static String encryptToBase64(Key publicKey, String toBeCiphred) {
-        byte[] cyphredText = RSA.encrypt(publicKey, toBeCiphred.getBytes());
-        return Base64.encodeToString(cyphredText, Base64.DEFAULT);
+    public static String encryptToBase64(PublicKey publicKey, String toBeCiphred) {
+        try {
+            byte[] cyphredText = RSA.encrypt(publicKey, toBeCiphred.getBytes("UTF-8"));
+            return Base64.encodeToString(cyphredText, Base64.DEFAULT);
+        }catch(Exception e){
+            Log.wtf("encryptToBase64", e);
+            throw new RuntimeException(e);
+        }
     }
 
-    public static byte[] decrypt(Key privateKey, byte[] encryptedText) {
+    public static byte[] decrypt(PrivateKey privateKey, byte[] encryptedText) {
         try {
           //  Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
-            Cipher rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "AndroidOpenSSL");
+            Cipher rsaCipher = RSA.getCipher();
             rsaCipher.init(Cipher.DECRYPT_MODE, privateKey);
             return rsaCipher.doFinal(encryptedText);
         } catch (Exception e) {
@@ -158,7 +178,7 @@ public class RSA {
         }
     }
 
-    public static String decryptFromBase64(Key key, String cyphredText) {
+    public static String decryptFromBase64(PrivateKey key, String cyphredText) {
         byte[] afterDecrypting = RSA.decrypt(key, Base64.decode(cyphredText, Base64.DEFAULT));
         return stringify(afterDecrypting);
     }
@@ -181,7 +201,7 @@ public class RSA {
 
     public static  KeyStore.PrivateKeyEntry  getPrivateKeyEntry(){
         try {
-            KeyStore.PrivateKeyEntry entry = (KeyStore.PrivateKeyEntry) RSA.keyStore.getEntry(Preferences.getString(Preferences.RSA_ALIAS), null);
+            KeyStore.PrivateKeyEntry entry = (KeyStore.PrivateKeyEntry) RSA.loadKeyStore().getEntry(Preferences.getString(Preferences.RSA_ALIAS), null);
             return entry;
         }catch(Exception e){
             Log.wtf("getkeys", e);
@@ -203,7 +223,8 @@ public class RSA {
                 return null;
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Log.e("a", "a", e);
+            return null;
         }
     }
 

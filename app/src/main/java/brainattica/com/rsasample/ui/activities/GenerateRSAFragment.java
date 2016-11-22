@@ -91,7 +91,7 @@ public class GenerateRSAFragment extends Fragment implements PagerSlide {
         publicKey.setVisibility(View.VISIBLE);
         privateKey.setVisibility(View.VISIBLE);
         try {
-            KeyStore.PrivateKeyEntry entry = (KeyStore.PrivateKeyEntry) RSA.keyStore.getEntry(Preferences.getString(Preferences.RSA_ALIAS), null);
+            KeyStore.PrivateKeyEntry entry = (KeyStore.PrivateKeyEntry) RSA.loadKeyStore().getEntry(Preferences.getString(Preferences.RSA_ALIAS), null);
             Certificate cert = entry.getCertificate();
 
             privateKey.setText(Crypto.stripPrivateKeyHeaders(cert.getEncoded().toString()));
