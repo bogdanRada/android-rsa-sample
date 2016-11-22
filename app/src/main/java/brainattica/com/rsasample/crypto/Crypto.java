@@ -24,38 +24,39 @@ import brainattica.com.rsasample.utils.Strings;
  * Created by javiermanzanomorilla on 04/01/15.
  */
 public class Crypto {
-
-    public static void writePublicKeyToPreferences(KeyPair key) {
-        StringWriter publicStringWriter = new StringWriter();
-        try {
-            PemWriter pemWriter = new PemWriter(publicStringWriter);
-            pemWriter.writeObject(new PemObject("PUBLIC KEY", key.getPublic().getEncoded()));
-            pemWriter.flush();
-            pemWriter.close();
-            Preferences.putString(Preferences.RSA_PUBLIC_KEY, publicStringWriter.toString());
-        } catch (IOException e) {
-            Log.e("RSA", e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    public static void writePrivateKeyToPreferences(KeyPair keyPair) {
-        StringWriter privateStringWriter = new StringWriter();
-        try {
-            PemWriter pemWriter = new PemWriter(privateStringWriter);
-            pemWriter.writeObject(new PemObject("PRIVATE KEY", keyPair.getPrivate().getEncoded()));
-            pemWriter.flush();
-            pemWriter.close();
-            Preferences.putString(Preferences.RSA_PRIVATE_KEY, privateStringWriter.toString());
-        } catch (IOException e) {
-            Log.e("RSA", e.getMessage());
-            e.printStackTrace();
-        }
-    }
+//
+//    public static void writePublicKeyToPreferences(KeyPair key) {
+//        StringWriter publicStringWriter = new StringWriter();
+//        try {
+//            PemWriter pemWriter = new PemWriter(publicStringWriter);
+//            pemWriter.writeObject(new PemObject("PUBLIC KEY", key.getPublic().getEncoded()));
+//            pemWriter.flush();
+//            pemWriter.close();
+//            Preferences.putString(Preferences.RSA_PUBLIC_KEY, publicStringWriter.toString());
+//        } catch (IOException e) {
+//            Log.e("RSA", e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public static void writePrivateKeyToPreferences(KeyPair keyPair) {
+//        StringWriter privateStringWriter = new StringWriter();
+//        try {
+//            PemWriter pemWriter = new PemWriter(privateStringWriter);
+//            pemWriter.writeObject(new PemObject("PRIVATE KEY", keyPair.getPrivate().getEncoded()));
+//            pemWriter.flush();
+//            pemWriter.close();
+//            Preferences.putString(Preferences.RSA_PRIVATE_KEY, privateStringWriter.toString());
+//        } catch (IOException e) {
+//            Log.e("RSA", e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
 
     public static PublicKey getRSAPublicKeyFromString(String publicKeyPEM) throws Exception {
         publicKeyPEM = stripPublicKeyHeaders(publicKeyPEM);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SC");
+      //  KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SC");
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA", "AndroidKeyStore");
         byte[] publicKeyBytes = Base64.decode(publicKeyPEM.getBytes("UTF-8"));
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKeyBytes);
         return keyFactory.generatePublic(x509KeySpec);
@@ -63,7 +64,8 @@ public class Crypto {
 
     public static PrivateKey getRSAPrivateKeyFromString(String privateKeyPEM) throws Exception {
         privateKeyPEM = stripPrivateKeyHeaders(privateKeyPEM);
-        KeyFactory fact = KeyFactory.getInstance("RSA", "SC");
+       // KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SC");
+        KeyFactory fact = KeyFactory.getInstance("RSA", "AndroidKeyStore");
         byte[] clear = Base64.decode(privateKeyPEM);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(clear);
         PrivateKey priv = fact.generatePrivate(keySpec);

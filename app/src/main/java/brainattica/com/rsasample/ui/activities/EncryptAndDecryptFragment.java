@@ -40,7 +40,7 @@ public class EncryptAndDecryptFragment extends Fragment implements PagerSlide {
         encrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Preferences.getString(Preferences.RSA_PRIVATE_KEY) == null) {
+                if (Preferences.getString(Preferences.RSA_ALIAS) == null) {
                     Toast.makeText(getActivity(), "There's now RSA KeyPair generated", Toast.LENGTH_LONG).show();
                     return;
                 }

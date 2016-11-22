@@ -6,9 +6,7 @@ import android.content.SharedPreferences;
 public class Preferences {
 
     public static final String SHARED_PREFERENCES = "SHARED_PREFERENCES";
-    public static final String RSA_GENERATED = "com.brainattica.RSA_GENERATED";
-    public static final String RSA_PUBLIC_KEY = "com.brainattica.RSA_PUBLIC_KEY";
-    public static final String RSA_PRIVATE_KEY = "com.brainattica.RSA_PRIVATE_KEY";
+    public static final String RSA_ALIAS = "com.brainattica.RSA_ALIAS";
     public static final String ENCRYPTED_MESSAGE = "com.brainattica.ENCRYPTED_MESSAGE";
 
     public static SharedPreferences mPreferences;

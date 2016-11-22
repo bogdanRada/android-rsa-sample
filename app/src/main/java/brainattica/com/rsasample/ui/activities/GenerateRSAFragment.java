@@ -3,13 +3,18 @@ package brainattica.com.rsasample.ui.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +46,7 @@ public class GenerateRSAFragment extends Fragment implements PagerSlide {
         privateKey = (TextView) view.findViewById(R.id.private_key);
         publicKey = (TextView) view.findViewById(R.id.public_key);
         completedContainer = view.findViewById(R.id.completed);
-        if (Preferences.getString(Preferences.RSA_PRIVATE_KEY) != null) {
+        if (Preferences.getString(Preferences.RSA_ALIAS) != null) {
             showKeyPair();
         }
         view.findViewById(R.id.generate).setOnClickListener(new View.OnClickListener() {
@@ -62,9 +67,7 @@ public class GenerateRSAFragment extends Fragment implements PagerSlide {
                             }
                         });
                         final long timeStarted = System.currentTimeMillis();
-                        final KeyPair keyPair = RSA.generate();
-                        Crypto.writePrivateKeyToPreferences(keyPair);
-                        Crypto.writePublicKeyToPreferences(keyPair);
+                        final KeyPair keyPair = RSA.generate(getActivity().getApplicationContext());
                         final long timeFinished = System.currentTimeMillis();
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -81,13 +84,21 @@ public class GenerateRSAFragment extends Fragment implements PagerSlide {
     }
 
     public void showKeyPair() {
+
         progress.setVisibility(View.GONE);
         generated.setVisibility(View.VISIBLE);
         completedContainer.setVisibility(View.VISIBLE);
         publicKey.setVisibility(View.VISIBLE);
         privateKey.setVisibility(View.VISIBLE);
-        privateKey.setText(Crypto.stripPrivateKeyHeaders(Preferences.getString(Preferences.RSA_PRIVATE_KEY)));
-        publicKey.setText(Crypto.stripPublicKeyHeaders(Preferences.getString(Preferences.RSA_PUBLIC_KEY)));
+        try {
+            KeyStore.PrivateKeyEntry entry = (KeyStore.PrivateKeyEntry) RSA.keyStore.getEntry(Preferences.getString(Preferences.RSA_ALIAS), null);
+            Certificate cert = entry.getCertificate();
+
+            privateKey.setText(Crypto.stripPrivateKeyHeaders(cert.getEncoded().toString()));
+            publicKey.setText(Crypto.stripPublicKeyHeaders(cert.getPublicKey().getEncoded().toString()));
+        }catch(Exception e){
+            Log.wtf("showKeyPair", e);
+        }
     }
 
     @Override
